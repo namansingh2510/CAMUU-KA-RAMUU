@@ -25,6 +25,7 @@ import ManageTeachers from "./admin/ManageTeachers";
 import AdminReports from "./admin/AdminReports";
 import AdminSchedule from "./admin/AdminSchedule";
 import AllRecords from "./admin/AllRecords";
+import ViewFeedback from "./admin/ViewFeedback";
 
 function StudentRoutes() {
   return (
@@ -63,6 +64,7 @@ function AdminRoutes() {
       <Route path="reports" element={<AdminReports />} />
       <Route path="schedule-manage" element={<AdminSchedule />} />
       <Route path="all-records" element={<AllRecords />} />
+      <Route path="admin-feedback" element={<ViewFeedback />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

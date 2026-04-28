@@ -1,18 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
+import { postFeedback, getTeachers } from "@/lib/api";
+import { TeacherRecord } from "@/data/mockData";
+import { useAuth } from "@/context/AuthContext";
 
 export default function StudentFeedback() {
+  const { user } = useAuth();
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
+  const [teachers, setTeachers] = useState<TeacherRecord[]>([]);
+  const [selectedTeacher, setSelectedTeacher] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    getTeachers().then(setTeachers).catch(() => toast.error("Failed to load teachers"));
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedTeacher) { toast.error("Please select a teacher"); return; }
     if (rating === 0) { toast.error("Please select a rating"); return; }
-    toast.success("Feedback submitted successfully!");
-    setRating(0);
-    setComment("");
+    
+    try {
+      const teacher = teachers.find(t => t.id.toString() === selectedTeacher);
+      if (!teacher) return;
+      
+      await postFeedback({
+        studentName: user?.name || "Student",
+        teacherId: teacher.id,
+        teacherName: teacher.name,
+        rating,
+        comment
+      });
+      toast.success("Feedback submitted successfully!");
+      setRating(0);
+      setComment("");
+      setSelectedTeacher("");
+    } catch {
+      toast.error("Failed to submit feedback");
+    }
   };
 
   return (
@@ -21,6 +48,19 @@ export default function StudentFeedback() {
         <h2 className="text-2xl font-bold">Submit Feedback</h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">Teacher</label>
+            <select
+              value={selectedTeacher}
+              onChange={(e) => setSelectedTeacher(e.target.value)}
+              className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition"
+            >
+              <option value="">-- Select Teacher --</option>
+              {teachers.map(t => (
+                <option key={t.id} value={t.id.toString()}>{t.name}</option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-muted-foreground mb-2">Rating</label>
             <div className="flex gap-1">

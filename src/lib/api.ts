@@ -28,6 +28,10 @@ export const addStudent = async (student: Omit<StudentRecord, "id">): Promise<St
   return response.data;
 };
 
+export const updateStudent = async (id: number, student: StudentRecord): Promise<void> => {
+  await api.put(`/Students/${id}`, student);
+};
+
 export const deleteStudent = async (id: number): Promise<void> => {
   await api.delete(`/Students/${id}`);
 };
@@ -42,6 +46,30 @@ export const addTeacher = async (teacher: Omit<TeacherRecord, "id">): Promise<Te
   return response.data;
 };
 
+export const updateTeacher = async (id: number, teacher: TeacherRecord): Promise<void> => {
+  await api.put(`/Teachers/${id}`, teacher);
+};
+
 export const deleteTeacher = async (id: number): Promise<void> => {
   await api.delete(`/Teachers/${id}`);
+};
+
+export interface FeedbackRecord {
+  id?: number;
+  studentName: string;
+  teacherId: number;
+  teacherName: string;
+  rating: number;
+  comment: string;
+  createdAt?: string;
+}
+
+export const getFeedbacks = async (): Promise<FeedbackRecord[]> => {
+  const response = await api.get('/Feedbacks');
+  return response.data;
+};
+
+export const postFeedback = async (feedback: FeedbackRecord): Promise<FeedbackRecord> => {
+  const response = await api.post('/Feedbacks', feedback);
+  return response.data;
 };

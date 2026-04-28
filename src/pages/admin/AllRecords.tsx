@@ -1,8 +1,17 @@
-import { students, teachers, getOverallMarks, getOverallAttendance } from "@/data/mockData";
-import { useState } from "react";
+import { getOverallMarks, getOverallAttendance, StudentRecord, TeacherRecord } from "@/data/mockData";
+import { useState, useEffect } from "react";
+import { getStudents, getTeachers } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function AllRecords() {
   const [tab, setTab] = useState<"students" | "teachers">("students");
+  const [students, setStudents] = useState<StudentRecord[]>([]);
+  const [teachers, setTeachers] = useState<TeacherRecord[]>([]);
+
+  useEffect(() => {
+    getStudents().then(setStudents).catch(() => toast.error("Failed to fetch students from DB."));
+    getTeachers().then(setTeachers).catch(() => toast.error("Failed to fetch teachers from DB."));
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -43,9 +52,9 @@ export default function AllRecords() {
                   <td className="px-5 py-3">{s.rollNo}</td>
                   <td className="px-5 py-3">{s.course}</td>
                   <td className="px-5 py-3">{s.semester}</td>
-                  <td className="px-5 py-3">{getOverallMarks(s)}</td>
-                  <td className="px-5 py-3">{getOverallAttendance(s)}%</td>
-                  <td className="px-5 py-3">{s.parentName}</td>
+                  <td className="px-5 py-3">{s.marks && Object.keys(s.marks).length > 0 ? getOverallMarks(s) : "—"}</td>
+                  <td className="px-5 py-3">{s.attendance && Object.keys(s.attendance).length > 0 ? `${getOverallAttendance(s)}%` : "—"}</td>
+                  <td className="px-5 py-3">{s.parentName && s.parentName !== "—" ? s.parentName : "Not Provided"}</td>
                 </tr>
               ))}
             </tbody>
@@ -70,7 +79,7 @@ export default function AllRecords() {
                   <td className="px-5 py-3 font-medium">{t.name}</td>
                   <td className="px-5 py-3 text-primary">{t.email}</td>
                   <td className="px-5 py-3">{t.department}</td>
-                  <td className="px-5 py-3">{t.subjects.join(", ")}</td>
+                  <td className="px-5 py-3">{(t.subjects && t.subjects.length > 0) ? t.subjects.join(", ") : "—"}</td>
                 </tr>
               ))}
             </tbody>

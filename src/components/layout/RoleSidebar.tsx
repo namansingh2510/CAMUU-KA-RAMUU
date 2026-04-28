@@ -41,6 +41,7 @@ const menusByRole: Record<Role, MenuItem[]> = {
     { title: "Reports", url: "/reports", icon: BarChart3 },
     { title: "Schedule", url: "/schedule-manage", icon: Calendar },
     { title: "All Records", url: "/all-records", icon: FileText },
+    { title: "Feedback", url: "/admin-feedback", icon: MessageSquare },
   ],
 };
 
